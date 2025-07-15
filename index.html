@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo da Quantidade Ideal de Self Checkout (SCO)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; }
+        .calculator-container { background-color: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); max-width: 800px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .logo-container { margin-bottom: 25px; }
+        .logo-container img { max-width: 150px; height: auto; border-radius: 8px; }
+        .input-group { margin-bottom: 20px; padding: 15px; background-color: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb; width: 100%; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 1em; }
+        .input-group input[type="number"] { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1em; color: #4b5563; outline: none; transition: border-color 0.2s ease; }
+        .input-group input[type="number"]:focus { border-color: #009931; box-shadow: 0 0 0 2px rgba(0, 153, 49, 0.2); }
+        .calculate-button { width: 100%; padding: 15px 20px; background-color: #009931; color: white; border: none; border-radius: 10px; font-size: 1.1em; font-weight: 700; cursor: pointer; transition: background-color 0.3s ease; box-shadow: 0 4px 15px rgba(0, 153, 49, 0.3); }
+        .calculate-button:hover { background-color: #007a27; }
+        .results-section { margin-top: 30px; padding: 25px; background-color: #f0fdf4; border: 1px solid #009931; border-radius: 12px; color: #007a27; font-size: 1.1em; line-height: 1.6; display: none; font-weight: 600; width: 100%; }
+        .contact-info { margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #4b5563; width: 100%; }
+        .contact-info p { margin-bottom: 8px; font-size: 0.95em; }
+        .contact-info a { color: #009931; text-decoration: none; font-weight: 600; }
+        .contact-info a:hover { text-decoration: underline; }
+        .error-message { color: #ef4444; background-color: #fef2f2; border: 1px solid #ef4444; padding: 10px; border-radius: 8px; margin-bottom: 20px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="logo-container">
+            <img src="https://placehold.co/150x50/009931/ffffff?text=S%26I+Automação" alt="Logo S&I Automação">
+        </div>
+        <h1 class="text-3xl font-extrabold text-center text-gray-800 mb-6">Cálculo da Quantidade Ideal de Self Checkout (SCO) 🛒</h1>
+        <p class="text-center text-gray-600 mb-8">Estime a quantidade ideal de terminais de Self-Checkout para o seu supermercado, otimizando o fluxo de clientes e a eficiência.</p>
+        <form id="scoCalculatorForm">
+            <div id="errorMessage" class="error-message">Por favor, preencha todos os campos com valores válidos.</div>
+            <div class="input-group rounded-xl"><label for="clientesDia">1. Quantos clientes seu supermercado atende por dia?</label><input type="number" id="clientesDia" name="clientesDia" min="1" required></div>
+            <div class="input-group rounded-xl"><label for="percentPico">2. Qual a porcentagem de clientes que frequentam no horário de pico? (%)</label><input type="number" id="percentPico" name="percentPico" min="1" max="100" required></div>
+            <div class="input-group rounded-xl"><label for="duracaoPico">3. Qual a duração do horário de pico (em horas)?</label><input type="number" id="duracaoPico" name="duracaoPico" min="0.5" step="0.5" required></div>
+            <button type="submit" class="calculate-button rounded-xl">Calcular Quantidade Ideal de SCOs</button>
+        </form>
+        <div id="results" class="results-section rounded-xl"></div>
+        <div class="contact-info">
+            <p class="text-xl font-bold mb-3 text-gray-800">Pronto para Otimizar seu Negócio?</p>
+            <p>Fale com nossos especialistas para uma análise detalhada e personalizada:</p>
+            <p><a href="https://wa.me/553134893300" target="_blank">WhatsApp: (31) 3489-3300</a></p>
+            <p><a href="mailto:contato@siautomacao.com.br">E-mail: contato@siautomacao.com.br</a></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('scoCalculatorForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const errorMessageDiv = document.getElementById('errorMessage');
+            errorMessageDiv.style.display = 'none';
+            const clientesDia = parseFloat(document.getElementById('clientesDia').value);
+            const percentPico = parseFloat(document.getElementById('percentPico').value);
+            const duracaoPico = parseFloat(document.getElementById('duracaoPico').value);
+            if (isNaN(clientesDia) || clientesDia <= 0 || isNaN(percentPico) || percentPico <= 0 || percentPico > 100 || isNaN(duracaoPico) || duracaoPico <= 0) {
+                errorMessageDiv.style.display = 'block';
+                document.getElementById('results').style.display = 'none';
+                return;
+            }
+            const adesaoSCO = 30;
+            const tempoMedioSCO = 4;
+            const capacidadePorSCOHora = 60 / tempoMedioSCO;
+            const clientesPorHoraPico = (clientesDia * (percentPico / 100)) / duracaoPico;
+            const clientesSCOPorHoraPico = clientesPorHoraPico * (adesaoSCO / 100);
+            let quantidadeIdealSCOs = clientesSCOPorHoraPico / capacidadePorSCOHora;
+            quantidadeIdealSCOs = Math.round(quantidadeIdealSCOs);
+            if (quantidadeIdealSCOs < 1 && clientesSCOPorHoraPico > 0) { quantidadeIdealSCOs = 1; } else if (clientesSCOPorHoraPico === 0) { quantidadeIdealSCOs = 0; }
+            if (quantidadeIdealSCOs === 1) { quantidadeIdealSCOs = 2; }
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = `<p class="text-center font-bold text-lg mb-4">Resultado da Sua Estimativa:</p><p>Com base nos dados fornecidos, a <strong>quantidade ideal de terminais de Self-Checkout (SCOs)</strong> para o seu supermercado é de:</p><p class="text-center text-4xl font-extrabold my-6 text-green-700">${quantidadeIdealSCOs} SCOs</p><p class="font-bold mt-6 mb-2">Recomendações Adicionais para o Sucesso do seu Self-Checkout:</p><ul class="list-disc list-inside text-sm leading-relaxed"><li><strong>Ofereça incentivos</strong> e suporte para aumentar a adesão dos clientes ao Self-Checkout.</li><li>Adicione <strong>1 SCO extra</strong> para redundância operacional e picos inesperados.</li><li>Observe o <strong>perfil do seu público</strong> (idosos, jovens, volume de compras) para otimizar a experiência.</li><li>Considere <strong>modelos híbridos</strong> (caixa humano + SCO) para atender a diferentes preferências.</li></ul><p class="mt-4 text-center text-sm">Esta é uma estimativa. Para um planejamento preciso, nossos especialistas estão à disposição!</p>`;
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    </script>
+</body>
+</html>
